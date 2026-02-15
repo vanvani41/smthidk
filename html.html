@@ -13,29 +13,61 @@
 <pre id="response"></pre>
 <h1>yo, hi!!</h1>
 <hr>
-<p>smth</p>
-<hr>
 <button class="btnonetwo">PRESS ON ME!!</button>
 <script>
-$(document).ready(function(){
-    $(".btnonetwo").click(function(){
+$(function(){
+    $(".btnonetwo").on('click', function(){
         $.ajax({
             url: "https://fortnite-api.com/v2/shop?limit=30",
-            datatype: "json",
+            dataType: "json",
             method: "GET",
             success: function(result){
-                const boredElem = document.getElementById("asdasds") || document.querySelector(".boredinfo");
-                boredElem.innerHTML = `
-                <div class="asdbtn"><h1>${result.data.entries.1.devName}: Price: ${result.data.entries.1.finalprice}</h1></div>
-                `;
-                console.log(result.data.entries)
+                const out = document.getElementById("asdasds") || document.querySelector(".boredinfo");
+                const entries = result && result.data && result.data.entries;
+                if(!Array.isArray(entries) || entries.length === 0){
+                    out.textContent = 'No entries array found in response. Check console for full result.';
+                    return;
+                }
+
+                // Build a list of up to 30 items in the requested format
+                const listCount = Math.min(30, entries.length);
+                let html = '<div class="asdbtn"><h2>Shop items (showing ' + listCount + ')</h2><ul>';
+                for(let i = 0; i < listCount; i++){
+                    const e = entries[i];
+                    const name = e && (e.devName || e.name || (e.bundle && e.bundle.name)) || 'N/A';
+                    const price = e && (
+                        (e.finalprice !== undefined ? e.finalprice :
+                        (e.finalPrice !== undefined ? e.finalPrice :
+                        (e.price !== undefined ? e.price : 'N/A')))
+                    );
+                    html += '<li>Name: ' + escapeHtml(String(name)) + '; Price: ' + escapeHtml(String(price)) + '</li>';
+                }
+                html += '</ul></div>';
+
+                // Also show the single selected item (if in range) for inspection
+
+                out.innerHTML = html;
             },
             error: function(xhr){
-                console.log(xhr.statusText)
+                console.log(xhr.statusText);
+                const out = document.getElementById("asdasds") || document.querySelector(".boredinfo");
+                out.textContent = 'Request failed: ' + xhr.status + ' ' + xhr.statusText;
             }
         });
-    })
-})
+    });
+
+    // Allow pressing Enter in the index input to trigger the button click
+    $('#entryIndex').on('keydown', function(e){
+        if(e.key === 'Enter' || e.which === 13){
+            $('.btnonetwo').click();
+        }
+    });
+
+    // small helper to escape HTML when injecting text
+    function escapeHtml(str){
+        return String(str).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; });
+    }
+});
 </script>
 <div id="asdasds"></div>
 </body>
