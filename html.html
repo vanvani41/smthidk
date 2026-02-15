@@ -1,0 +1,74 @@
+<!doctype html>
+    <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Fortnite-API/nodejs-wrapper@1.1.0-web/FNAPIcom.js"></script>
+    <title>v41's branch</title>
+</head>
+<body>
+<pre id="response"></pre>
+<h1>yo, hi!!</h1>
+<hr>
+<button class="btnonetwo">PRESS ON ME!!</button>
+<script>
+$(function(){
+    $(".btnonetwo").on('click', function(){
+        $.ajax({
+            url: "https://fortnite-api.com/v2/shop?limit=30",
+            dataType: "json",
+            method: "GET",
+            success: function(result){
+                const out = document.getElementById("asdasds") || document.querySelector(".boredinfo");
+                const entries = result && result.data && result.data.entries;
+                if(!Array.isArray(entries) || entries.length === 0){
+                    out.textContent = 'No entries array found in response. Check console for full result.';
+                    return;
+                }
+
+                // Build a list of up to 30 items in the requested format
+                const listCount = Math.min(30, entries.length);
+                let html = '<div class="asdbtn"><h2>Shop items (showing ' + listCount + ')</h2><ul>';
+                for(let i = 0; i < listCount; i++){
+                    const e = entries[i];
+                    const name = e && (e.devName || e.name || (e.bundle && e.bundle.name)) || 'N/A';
+                    const price = e && (
+                        (e.finalprice !== undefined ? e.finalprice :
+                        (e.finalPrice !== undefined ? e.finalPrice :
+                        (e.price !== undefined ? e.price : 'N/A')))
+                    );
+                    html += '<li>Name: ' + escapeHtml(String(name)) + '; Price: ' + escapeHtml(String(price)) + '</li>';
+                }
+                html += '</ul></div>';
+
+                // Also show the single selected item (if in range) for inspection
+
+                out.innerHTML = html;
+            },
+            error: function(xhr){
+                console.log(xhr.statusText);
+                const out = document.getElementById("asdasds") || document.querySelector(".boredinfo");
+                out.textContent = 'Request failed: ' + xhr.status + ' ' + xhr.statusText;
+            }
+        });
+    });
+
+    // Allow pressing Enter in the index input to trigger the button click
+    $('#entryIndex').on('keydown', function(e){
+        if(e.key === 'Enter' || e.which === 13){
+            $('.btnonetwo').click();
+        }
+    });
+
+    // small helper to escape HTML when injecting text
+    function escapeHtml(str){
+        return String(str).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; });
+    }
+});
+</script>
+<div id="asdasds"></div>
+</body>
+</html>
