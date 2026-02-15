@@ -5,43 +5,38 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Fortnite-API/nodejs-wrapper@1.1.0-web/FNAPIcom.js"></script>
     <title>v41's branch</title>
-    <style>
-            :root{
-            --bg:#f6f8fb;--card:#ffffff;--text:#0b1220;--muted:#4b5563
-            }
-            *{
-            cursor: crosshair;
-            }
-            html,body{
-            height:100%
-            ;margin:0;
-            background:var(--bg);
-            color:var(--text);
-            font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial
-            }
-            .wrap{
-            max-width:800px;
-            margin:48px auto;
-            padding:28px;
-            background:var(--card);
-            border-radius:12px;
-            box-shadow:0 6px 18px rgba(11,18,32,0.06)
-            }
-            h1{
-            margin:0 0 8px;
-            font-size:1.8rem
-            }
-            p{
-            margin:0;
-            color:var(--muted);
-            line-height:1.5
-            }>
-        </style>
 </head>
 <body>
+<pre id="response"></pre>
 <h1>yo, hi!!</h1>
 <hr>
-<p>this v41's branch!!</p>
+<p>smth</p>
+<hr>
+<button class="btnonetwo">PRESS ON ME!!</button>
+<script>
+$(document).ready(function(){
+    $(".btnonetwo").click(function(){
+        $.ajax({
+            url: "https://fortnite-api.com/v2/shop?limit=30",
+            datatype: "json",
+            method: "GET",
+            success: function(result){
+                const boredElem = document.getElementById("asdasds") || document.querySelector(".boredinfo");
+                boredElem.innerHTML = `
+                <div class="asdbtn"><h1>${result.data.entries.1.devName}: Price: ${result.data.entries.1.finalprice}</h1></div>
+                `;
+                console.log(result.data.entries)
+            },
+            error: function(xhr){
+                console.log(xhr.statusText)
+            }
+        });
+    })
+})
+</script>
+<div id="asdasds"></div>
 </body>
 </html>
